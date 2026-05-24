@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SITTA UT — Login</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .password-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--gray-500);
+      font-size: 1rem; padding: 0;
+    }
+    .password-group { position: relative; }
+    .password-group .form-control { padding-right: 40px; }
+    .feature-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .feature-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(255,255,255,0.15); display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.2rem;
+    }
+    .feature-text h4 { font-size: 0.9rem; font-weight: 700; }
+    .feature-text p { font-size: 0.78rem; opacity: 0.75; margin-top: 1px; }
+  </style>
+</head>
+<body>
+<div class="login-page">
+
+  <!-- Left Panel -->
+  <div class="login-left">
+    <div class="login-left-content">
+      <div class="logo-big">
+        <img src="img/logout.png" alt="Logo UT" style="width:180px;height:auto;margin-bottom:16px;" />
+      </div>
+      <h1>SITTA</h1>
+      <p>Sistem Informasi Tracking dan Transaksi Bahan Ajar — Universitas Terbuka</p>
+      <div style="margin-top:36px;">
+        <div class="feature-item">
+          <div class="feature-icon">📚</div>
+          <div class="feature-text">
+            <h4>Kelola Stok Bahan Ajar</h4>
+            <p>Monitor inventaris bahan ajar seluruh UPBJJ secara real-time</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🚚</div>
+          <div class="feature-text">
+            <h4>Tracking Delivery Order</h4>
+            <p>Pantau & buat DO pengiriman bahan ajar kapan saja</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-text">
+            <h4>Vue.js Powered</h4>
+            <p>Antarmuka reaktif & interaktif berbasis Vue.js Framework</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="login-right">
+    <div class="login-box">
+      <div class="logo-text">SITTA <span>UT</span></div>
+      <h2>Selamat Datang</h2>
+      <p class="subtitle">Masukkan akun Anda untuk melanjutkan</p>
+
+      <div id="loginAlert" class="alert alert-danger hidden"></div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="input-group">
+          <span class="input-icon">✉️</span>
+          <input type="email" id="inputEmail" class="form-control" placeholder="nama@ut.ac.id" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-group password-group">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="inputPassword" class="form-control" placeholder="Masukkan password" />
+          <button class="password-toggle" onclick="togglePasswordLogin()" id="toggleBtn">👁️</button>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--gray-600);cursor:pointer;">
+          <input type="checkbox" style="accent-color:var(--primary);" /> Ingat saya
+        </label>
+        <button class="link-btn" onclick="showModal('modalLupaPassword')">Lupa Password?</button>
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()">
+        Masuk ke SITTA
+      </button>
+
+      <div class="divider">atau</div>
+
+      <p style="text-align:center;font-size:0.85rem;color:var(--gray-500);">
+        Belum punya akun?
+        <button class="link-btn" onclick="showModal('modalDaftar')">Daftar Sekarang</button>
+      </p>
+
+      <p style="text-align:center;font-size:0.8rem;color:var(--gray-400);margin-top:28px;padding-top:16px;border-top:1px solid var(--gray-200);">
+        💡 Demo: <strong style="color:var(--gray-600);">admin@ut.ac.id</strong> / <strong style="color:var(--gray-600);">admin123</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lupa Password -->
+<div class="modal-overlay" id="modalLupaPassword">
+  <div class="modal">
+    <div class="modal-header">
+      <span>🔑 Lupa Password</span>
+      <button class="modal-close" onclick="closeModal('modalLupaPassword')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--gray-500);font-size:0.85rem;margin-bottom:16px;">Masukkan email terdaftar. Tautan reset akan dikirimkan ke email Anda.</p>
+      <div class="form-group">
+        <label class="form-label">Email Terdaftar</label>
+        <div class="input-group">
+          <span class="input-icon">✉️</span>
+          <input type="email" id="resetEmail" class="form-control" placeholder="nama@ut.ac.id" />
+        </div>
+      </div>
+      <div id="resetAlert"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modalLupaPassword')">Batal</button>
+      <button class="btn btn-primary btn-sm" onclick="doResetPassword()">Kirim Tautan Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Daftar -->
+<div class="modal-overlay" id="modalDaftar">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <span>📝 Daftar Akun Baru</span>
+      <button class="modal-close" onclick="closeModal('modalDaftar')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid grid-2" style="gap:14px;">
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <input type="text" id="daftarNama" class="form-control" placeholder="Nama lengkap" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role / Unit</label>
+          <select id="daftarRole" class="form-control">
+            <option>UPBJJ-UT</option>
+            <option>Puslaba</option>
+            <option>Fakultas</option>
+            <option>Administrator</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Institusi</label>
+        <div class="input-group">
+          <span class="input-icon">✉️</span>
+          <input type="email" id="daftarEmail" class="form-control" placeholder="nama@ut.ac.id" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="daftarPassword" class="form-control" placeholder="Minimal 6 karakter" />
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Konfirmasi Password</label>
+        <input type="password" id="daftarKonfirmasi" class="form-control" placeholder="Ulangi password" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('modalDaftar')">Batal</button>
+      <button class="btn btn-primary btn-sm" onclick="doDaftar()">Buat Akun</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/dataBahanAjar.js"></script>
+<script>
+  function doLogin() {
+    const email    = document.getElementById('inputEmail').value.trim();
+    const password = document.getElementById('inputPassword').value;
+    const alertEl  = document.getElementById('loginAlert');
+    if (!email || !password) {
+      alertEl.textContent = '⚠️ Email dan password tidak boleh kosong.';
+      alertEl.classList.remove('hidden'); return;
+    }
+    const user = dataPengguna.find(u => u.email === email && u.password === password);
+    if (user) {
+      alertEl.classList.add('hidden');
+      sessionStorage.setItem('user', JSON.stringify(user));
+      window.location.href = 'stok.html';
+    } else {
+      alertEl.textContent = '⚠️ Email atau password salah.';
+      alertEl.classList.remove('hidden');
+      document.getElementById('inputPassword').value = '';
+    }
+  }
+
+  function togglePasswordLogin() {
+    const input = document.getElementById('inputPassword');
+    const btn   = document.getElementById('toggleBtn');
+    input.type  = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+  }
+
+  function showModal(id)  { document.getElementById(id).classList.add('active'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+  function doResetPassword() {
+    const email   = document.getElementById('resetEmail').value.trim();
+    const alertEl = document.getElementById('resetAlert');
+    if (!email) {
+      alertEl.className   = 'alert alert-danger';
+      alertEl.textContent = '⚠️ Masukkan email terlebih dahulu.'; return;
+    }
+    const found = dataPengguna.find(u => u.email === email);
+    alertEl.className   = found ? 'alert alert-success' : 'alert alert-danger';
+    alertEl.textContent = found
+      ? '✅ Tautan reset telah dikirim ke ' + email
+      : '⚠️ Email tidak terdaftar dalam sistem.';
+  }
+
+  function doDaftar() {
+    const nama       = document.getElementById('daftarNama').value.trim();
+    const email      = document.getElementById('daftarEmail').value.trim();
+    const password   = document.getElementById('daftarPassword').value;
+    const konfirmasi = document.getElementById('daftarKonfirmasi').value;
+    const role       = document.getElementById('daftarRole').value;
+    if (!nama || !email || !password) { alert('⚠️ Semua field wajib diisi!'); return; }
+    if (password !== konfirmasi)      { alert('⚠️ Password tidak cocok!'); return; }
+    if (password.length < 6)          { alert('⚠️ Password minimal 6 karakter!'); return; }
+    if (dataPengguna.find(u => u.email === email)) { alert('⚠️ Email sudah terdaftar!'); return; }
+    dataPengguna.push({ id: dataPengguna.length + 1, nama, email, password, role, lokasi: 'Baru' });
+    closeModal('modalDaftar');
+    alert('✅ Pendaftaran berhasil! Silakan login.');
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
+  });
+</script>
+</body>
+</html>

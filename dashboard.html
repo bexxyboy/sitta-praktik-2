@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SITTA UT — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="dashboard.html" class="navbar-brand">
+      <span class="nav-logo-badge">SITTA</span>
+      <span>Universitas Terbuka</span>
+    </a>
+    <ul class="navbar-nav">
+      <li><a href="stok.html" class="nav-link">📚 Informasi Bahan Ajar</a></li>
+      <li><a href="tracking.html" class="nav-link">🚚 Tracking Pengiriman</a></li>
+      <li class="dropdown">
+        <button class="nav-link">
+          📊 Laporan ▾
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" onclick="showSection('monitoring')">📈 Monitoring Progress DO</a>
+          <a class="dropdown-item" href="#" onclick="showSection('rekap')">📋 Rekap Bahan Ajar</a>
+        </div>
+      </li>
+      <li><a href="#" class="nav-link" onclick="showSection('histori')">🕐 Histori Transaksi</a></li>
+      <li><a href="#" class="nav-link" id="navPengguna" onclick="showSection('pengguna')" style="display:none;">👥 Pengguna</a></li>
+    </ul>
+    <div class="navbar-user">
+      <div style="text-align:right;">
+        <div style="font-size:0.85rem;font-weight:600;color:var(--gray-900);" id="navUserName">—</div>
+        <div style="font-size:0.75rem;color:var(--gray-500);" id="navUserRole">—</div>
+      </div>
+      <div class="user-avatar" id="navAvatar">?</div>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">Keluar</button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="page-container">
+
+    <!-- GREETING BANNER -->
+    <div class="greeting-banner">
+      <h2 id="greetingText">Selamat Datang!</h2>
+      <p id="greetingSubtext">Dashboard Aplikasi SITTA — Universitas Terbuka</p>
+      <div class="greeting-icon" id="greetingIcon">☀️</div>
+    </div>
+
+    <!-- DASHBOARD HOME -->
+    <div id="sectionHome">
+      <!-- Stat Cards -->
+      <div class="grid grid-4 mb-3" style="margin-bottom:24px;">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#dbeafe;">📦</div>
+          <div class="stat-value">5</div>
+          <div class="stat-label">Jenis Bahan Ajar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#dcfce7;">📊</div>
+          <div class="stat-value">1.587</div>
+          <div class="stat-label">Total Stok</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#fef9c3;">🚚</div>
+          <div class="stat-value">2</div>
+          <div class="stat-label">Pengiriman Aktif</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#fee2e2;">⚠️</div>
+          <div class="stat-value">1</div>
+          <div class="stat-label">Stok Perlu Perhatian</div>
+        </div>
+      </div>
+
+      <!-- Quick Nav -->
+      <div class="page-header">
+        <h2 class="page-title" style="font-size:1.1rem;color:var(--gray-700);">Menu Utama</h2>
+      </div>
+      <div class="grid grid-4" style="margin-bottom:28px;">
+        <a href="stok.html" class="nav-card">
+          <div class="nav-card-icon" style="background:#dbeafe;">📚</div>
+          <h3>Informasi Bahan Ajar</h3>
+          <p>Lihat dan kelola stok bahan ajar</p>
+        </a>
+        <a href="tracking.html" class="nav-card">
+          <div class="nav-card-icon" style="background:#dcfce7;">🚚</div>
+          <h3>Tracking Pengiriman</h3>
+          <p>Lacak status Delivery Order</p>
+        </a>
+        <a href="#" class="nav-card" onclick="showSection('monitoring');return false;">
+          <div class="nav-card-icon" style="background:#fef9c3;">📈</div>
+          <h3>Monitoring DO</h3>
+          <p>Progress Delivery Order bahan ajar</p>
+        </a>
+        <a href="#" class="nav-card" onclick="showSection('histori');return false;">
+          <div class="nav-card-icon" style="background:#fce7f3;">🕐</div>
+          <h3>Histori Transaksi</h3>
+          <p>Riwayat transaksi bahan ajar</p>
+        </a>
+        <a href="#" class="nav-card" id="cardPengguna" onclick="showSection('pengguna');return false;" style="display:none;">
+          <div class="nav-card-icon" style="background:#f0fdf4;">👥</div>
+          <h3>Manajemen Pengguna</h3>
+          <p>Kelola daftar akun pengguna SITTA</p>
+        </a>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          🕐 Aktivitas Terkini
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table>
+            <thead>
+              <tr>
+                <th>Nomor DO</th>
+                <th>Nama</th>
+                <th>Ekspedisi</th>
+                <th>Tanggal Kirim</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONITORING SECTION -->
+    <div id="sectionMonitoring" class="hidden">
+      <div class="page-header">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="page-title">📈 Monitoring Progress DO Bahan Ajar</h1>
+            <p class="page-subtitle">Status progress Delivery Order ke seluruh UPBJJ</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showSection('home')">← Kembali</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table>
+            <thead>
+              <tr>
+                <th>Nomor DO</th>
+                <th>Penerima</th>
+                <th>Ekspedisi</th>
+                <th>Paket</th>
+                <th>Total</th>
+                <th>Progress</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="monitoringTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REKAP SECTION -->
+    <div id="sectionRekap" class="hidden">
+      <div class="page-header">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="page-title">📋 Rekap Bahan Ajar</h1>
+            <p class="page-subtitle">Ringkasan stok bahan ajar di semua lokasi</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showSection('home')">← Kembali</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table>
+            <thead>
+              <tr>
+                <th>Kode Lokasi</th>
+                <th>Kode Barang</th>
+                <th>Nama Barang</th>
+                <th>Jenis</th>
+                <th>Edisi</th>
+                <th>Stok</th>
+                <th>Status Stok</th>
+              </tr>
+            </thead>
+            <tbody id="rekapTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORI SECTION -->
+    <div id="sectionHistori" class="hidden">
+      <div class="page-header">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="page-title">🕐 Histori Transaksi Bahan Ajar</h1>
+            <p class="page-subtitle">Riwayat seluruh transaksi pengiriman bahan ajar</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showSection('home')">← Kembali</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table>
+            <thead>
+              <tr>
+                <th>Nomor DO</th>
+                <th>Nama Penerima</th>
+                <th>Ekspedisi</th>
+                <th>Tanggal Kirim</th>
+                <th>Paket</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="historiTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENGGUNA SECTION -->
+    <div id="sectionPengguna" class="hidden">
+      <div class="page-header">
+        <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:12px;">
+          <div>
+            <h1 class="page-title">👥 Manajemen Pengguna</h1>
+            <p class="page-subtitle">Kelola daftar akun pengguna sistem SITTA</p>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-outline btn-sm" onclick="showSection('home')">← Kembali</button>
+            <button class="btn btn-primary" onclick="bukaModalTambah()">➕ Tambah Pengguna</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary chips -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;" id="penggunaSummary"></div>
+
+      <!-- Filter -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-body" style="padding:16px 20px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <div class="input-group" style="flex:1;min-width:200px;">
+              <span class="input-icon">🔍</span>
+              <input type="text" id="filterPengguna" class="form-control" placeholder="Cari nama atau email..." oninput="renderPengguna()" />
+            </div>
+            <select class="form-control" id="filterRole" onchange="renderPengguna()" style="width:auto;">
+              <option value="">Semua Role</option>
+              <option>Administrator</option>
+              <option>UPBJJ-UT</option>
+              <option>Puslaba</option>
+              <option>Fakultas</option>
+            </select>
+            <button class="btn btn-outline btn-sm" onclick="resetFilterPengguna()">↺ Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="card-header">
+          👤 Daftar Pengguna
+          <span id="penggunaCount" style="font-size:0.8rem;font-weight:500;color:var(--gray-500);"></span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:48px;">ID</th>
+                <th>Avatar</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Lokasi</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="penggunaTable"></tbody>
+          </table>
+          <div id="penggunaEmpty" class="hidden" style="text-align:center;padding:40px;color:var(--gray-500);">
+            😕 Tidak ada pengguna yang sesuai filter.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Tambah/Edit Pengguna -->
+  <div class="modal-overlay" id="modalPengguna">
+    <div class="modal" style="max-width:500px;">
+      <div class="modal-header">
+        <span id="modalPenggunaTitle">➕ Tambah Pengguna Baru</span>
+        <button class="modal-close" onclick="closeModal('modalPengguna')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editPenggunaId" />
+        <div class="grid grid-2" style="gap:14px;">
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Nama Lengkap <span style="color:var(--danger);">*</span></label>
+            <input type="text" id="fieldNama" class="form-control" placeholder="Nama lengkap pengguna" />
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Email <span style="color:var(--danger);">*</span></label>
+            <div class="input-group">
+              <span class="input-icon">✉️</span>
+              <input type="email" id="fieldEmail" class="form-control" placeholder="nama@ut.ac.id" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password <span style="color:var(--danger);">*</span></label>
+            <div class="input-group" style="position:relative;">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="fieldPassword" class="form-control" placeholder="Min. 6 karakter" style="padding-right:40px;" />
+              <button onclick="toggleFieldPass()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:0.95rem;" id="toggleFieldBtn">👁️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role <span style="color:var(--danger);">*</span></label>
+            <select id="fieldRole" class="form-control">
+              <option>UPBJJ-UT</option>
+              <option>Puslaba</option>
+              <option>Fakultas</option>
+              <option>Administrator</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;margin-bottom:0;">
+            <label class="form-label">Lokasi / Unit</label>
+            <input type="text" id="fieldLokasi" class="form-control" placeholder="Contoh: UPBJJ Jakarta" />
+          </div>
+        </div>
+        <div id="modalPenggunaAlert" class="hidden" style="margin-top:14px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeModal('modalPengguna')">Batal</button>
+        <button class="btn btn-primary btn-sm" id="btnSimpanPengguna" onclick="simpanPengguna()">✅ Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Hapus Pengguna -->
+  <div class="modal-overlay" id="modalHapusPengguna">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-header">
+        <span>⚠️ Konfirmasi Hapus</span>
+        <button class="modal-close" onclick="closeModal('modalHapusPengguna')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin menghapus pengguna <strong id="hapusPenggunaName"></strong>?</p>
+        <p class="text-muted text-sm mt-1" style="margin-top:8px;">Akun ini akan dihapus dari sistem dan tidak bisa login lagi.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeModal('modalHapusPengguna')">Batal</button>
+        <button class="btn btn-danger btn-sm" onclick="konfirmasiHapusPengguna()">🗑️ Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    // Auth check menggunakan fungsi global
+    const currentUser = checkAuth();
+    if (!currentUser) throw new Error('Auth failed');
+    
+    // Render recent table menggunakan fungsi global
+    renderRecentTracking('recentTable');
+    
+    // Fungsi showSection
+    function showSection(name) {
+      const sections = ['Home', 'Monitoring', 'Rekap', 'Histori', 'Pengguna'];
+      sections.forEach(s => {
+        const el = document.getElementById('section' + s);
+        if (el) el.classList.add('hidden');
+      });
+      const targetId = 'section' + name.charAt(0).toUpperCase() + name.slice(1);
+      const target = document.getElementById(targetId);
+      if (target) target.classList.remove('hidden');
+      
+      if (name === 'monitoring') renderMonitoringTable('monitoringTable');
+      if (name === 'rekap') renderRekapTable('rekapTable');
+      if (name === 'histori') renderHistoriTable('historiTable');
+      if (name === 'pengguna') renderPengguna();
+    }
+    
+    // ===== MANAJEMEN PENGGUNA =====
+    let penggunaData = [...dataPengguna];
+    let hapusPenggunaId = -1;
+    let modeEdit = false;
+    
+    function renderPenggunaSummary() {
+      const roles = {};
+      penggunaData.forEach(u => { roles[u.role] = (roles[u.role] || 0) + 1; });
+      let html = `<div style="padding:8px 16px;background:var(--white);border-radius:var(--radius-sm);border:1.5px solid var(--gray-200);font-size:0.8rem;font-weight:500;color:var(--gray-700);">
+        <strong style="font-size:0.95rem;color:var(--gray-900);display:block;">${penggunaData.length}</strong>Total Pengguna</div>`;
+      Object.entries(roles).forEach(([role, count]) => {
+        html += `<div style="padding:8px 16px;background:var(--white);border-radius:var(--radius-sm);border:1.5px solid var(--gray-200);font-size:0.8rem;font-weight:500;color:var(--gray-700);">
+          <strong style="font-size:0.95rem;color:var(--gray-900);display:block;">${count}</strong>${role}</div>`;
+      });
+      document.getElementById('penggunaSummary').innerHTML = html;
+    }
+    
+    function renderPengguna() {
+      const search = document.getElementById('filterPengguna').value.toLowerCase();
+      const role = document.getElementById('filterRole').value;
+      
+      const filtered = penggunaData.filter(u => {
+        const matchSearch = u.nama.toLowerCase().includes(search) || u.email.toLowerCase().includes(search);
+        const matchRole = !role || u.role === role;
+        return matchSearch && matchRole;
+      });
+      
+      document.getElementById('penggunaCount').textContent = `(${filtered.length} dari ${penggunaData.length})`;
+      const tbody = document.getElementById('penggunaTable');
+      const empty = document.getElementById('penggunaEmpty');
+      
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      
+      tbody.innerHTML = '';
+      filtered.forEach(u => {
+        const isMe = u.email === currentUser.email;
+        const badgeClass = roleColors[u.role] || 'badge-info';
+        tbody.innerHTML += `<tr style="${isMe ? 'background:var(--primary-light);' : ''}">
+          <td style="font-family:var(--font-mono);font-size:0.8rem;color:var(--gray-500);">#${u.id}</td>
+          <td>
+            <div style="width:36px;height:36px;border-radius:50%;background:${getAvatarColor(u.id)};
+              display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.8rem;">
+              ${getInitials(u.nama)}
+            </div>
+          </td>
+          <td>
+            <strong>${u.nama}</strong>
+            ${isMe ? '<span style="font-size:0.7rem;background:var(--primary);color:white;padding:1px 7px;border-radius:10px;margin-left:6px;">Anda</span>' : ''}
+          </td>
+          <td style="font-size:0.85rem;color:var(--gray-600);">${u.email}</td>
+          <td><span class="badge ${badgeClass}">${u.role}</span></td>
+          <td style="font-size:0.85rem;">${u.lokasi}</td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-outline btn-sm" onclick="bukaModalEdit(${u.id})" title="Edit">✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="hapusPengguna(${u.id})" title="Hapus" ${isMe ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>🗑️</button>
+            </div>
+          </td>
+        </tr>`;
+      });
+      renderPenggunaSummary();
+    }
+    
+    function resetFilterPengguna() {
+      document.getElementById('filterPengguna').value = '';
+      document.getElementById('filterRole').value = '';
+      renderPengguna();
+    }
+    
+    function bukaModalTambah() {
+      modeEdit = false;
+      document.getElementById('modalPenggunaTitle').textContent = '➕ Tambah Pengguna Baru';
+      document.getElementById('btnSimpanPengguna').textContent = '✅ Simpan';
+      document.getElementById('editPenggunaId').value = '';
+      document.getElementById('fieldNama').value = '';
+      document.getElementById('fieldEmail').value = '';
+      document.getElementById('fieldPassword').value = '';
+      document.getElementById('fieldPassword').placeholder = 'Min. 6 karakter';
+      document.getElementById('fieldRole').value = 'UPBJJ-UT';
+      document.getElementById('fieldLokasi').value = '';
+      document.getElementById('modalPenggunaAlert').className = 'hidden';
+      showModal('modalPengguna');
+    }
+    
+    function bukaModalEdit(id) {
+      const user = penggunaData.find(u => u.id === id);
+      if (!user) return;
+      modeEdit = true;
+      document.getElementById('modalPenggunaTitle').textContent = '✏️ Edit Pengguna';
+      document.getElementById('btnSimpanPengguna').textContent = '💾 Perbarui';
+      document.getElementById('editPenggunaId').value = id;
+      document.getElementById('fieldNama').value = user.nama;
+      document.getElementById('fieldEmail').value = user.email;
+      document.getElementById('fieldPassword').value = '';
+      document.getElementById('fieldPassword').placeholder = 'Kosongkan jika tidak diubah';
+      document.getElementById('fieldRole').value = user.role;
+      document.getElementById('fieldLokasi').value = user.lokasi;
+      document.getElementById('modalPenggunaAlert').className = 'hidden';
+      showModal('modalPengguna');
+    }
+    
+    function simpanPengguna() {
+      const nama = document.getElementById('fieldNama').value.trim();
+      const email = document.getElementById('fieldEmail').value.trim();
+      const password = document.getElementById('fieldPassword').value;
+      const role = document.getElementById('fieldRole').value;
+      const lokasi = document.getElementById('fieldLokasi').value.trim();
+      const alertEl = document.getElementById('modalPenggunaAlert');
+      
+      if (!nama || !email) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.textContent = '⚠️ Nama dan email wajib diisi.';
+        return;
+      }
+      if (!modeEdit && !password) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.textContent = '⚠️ Password wajib diisi untuk pengguna baru.';
+        return;
+      }
+      if (password && password.length < 6) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.textContent = '⚠️ Password minimal 6 karakter.';
+        return;
+      }
+      
+      const editId = parseInt(document.getElementById('editPenggunaId').value);
+      const emailExist = penggunaData.find(u => u.email === email && u.id !== editId);
+      if (emailExist) {
+        alertEl.className = 'alert alert-danger';
+        alertEl.textContent = '⚠️ Email sudah digunakan oleh pengguna lain.';
+        return;
+      }
+      
+      if (modeEdit) {
+        const idx = penggunaData.findIndex(u => u.id === editId);
+        if (idx >= 0) {
+          penggunaData[idx].nama = nama;
+          penggunaData[idx].email = email;
+          if (password) penggunaData[idx].password = password;
+          penggunaData[idx].role = role;
+          penggunaData[idx].lokasi = lokasi || '—';
+        }
+      } else {
+        const newId = Math.max(...penggunaData.map(u => u.id)) + 1;
+        penggunaData.push({ id: newId, nama, email, password, role, lokasi: lokasi || '—' });
+      }
+      
+      closeModal('modalPengguna');
+      renderPengguna();
+    }
+    
+    function hapusPengguna(id) {
+      const user = penggunaData.find(u => u.id === id);
+      if (!user) return;
+      hapusPenggunaId = id;
+      document.getElementById('hapusPenggunaName').textContent = '"' + user.nama + '"';
+      showModal('modalHapusPengguna');
+    }
+    
+    function konfirmasiHapusPengguna() {
+      penggunaData = penggunaData.filter(u => u.id !== hapusPenggunaId);
+      hapusPenggunaId = -1;
+      closeModal('modalHapusPengguna');
+      renderPengguna();
+    }
+    
+    function toggleFieldPass() {
+      const inp = document.getElementById('fieldPassword');
+      const btn = document.getElementById('toggleFieldBtn');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        inp.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+    
+    // Override doLogout dari global
+    window.doLogout = function() {
+      if (confirm('Apakah Anda yakin ingin keluar dari SITTA?')) {
+        sessionStorage.removeItem('user');
+        window.location.href = 'index.html';
+      }
+    };
+    
+    // Inisialisasi render pengguna jika administrator
+    if (currentUser.role === 'Administrator') {
+      renderPengguna();
+    }
+  </script>
+</body>
+</html>
